@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='lazzy_toggl',
-      version='0.1',
+      version='1.0.0',
       description='Toggl enhancement with Gmail -- too lazzy',
       url='https://github.com/mades-g/LazzyToggl/',
       author='eudes duarte',

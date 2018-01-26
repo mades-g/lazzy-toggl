@@ -1,5 +1,4 @@
 import os, requests
-import json
 
 class TogglCommander:
     # Since Projects Time entries have almost the same call signature in the future should be rethinked o.o
@@ -23,7 +22,7 @@ class TogglCommander:
             "description": ""
         }
     }
-    
+
     def __init__(self):
         try:
             self.toggl_api_key  = os.environ['TOGGL_API_KEY']

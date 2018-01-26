@@ -2,34 +2,21 @@
 from google_commander import core as gcore
 from toggl_commander import core as tgcore
 import argparse
-import cmd
 import json
 
 # This is only went we are on interactive mode
 
-class Command(cmd.Cmd):
-    """ Lazzy toggle enhanced with gmail """
+main_parser = argparse.ArgumentParser(
+                                    prog='lazzy toggl',
+                                    usage=None,
+                                    description='Lazzy Toggl enchaned with Gmail',
+                                    epilog=None,
+                                    version='1.0.0'
+)
 
-    ruler = '-'
-    prompt = 'lazzy_cmd: '
-    tickets = {}
+main_parser.add_argument('-l', default='current', nargs='+', help='List your tickets, default behaviour is the current one.', dest='list_tickets')
 
-    def do_l(self, wkrange=None, idx=None):
-        if wkrange is None:
-            wkrange = 'current'
-        if idx is None:
-            idx = 1
-        self.tickets = json.dumps(gcore.GmailCommander().getmytickets(wk=wkrange, wkidx=idx), indent=4)
-        print self.tickets
-    
-    def do_search(self, ticketid):
-        self.search_ticket(ticketid)
+argsv = main_parser.parse_args()
 
-    @staticmethod
-    def search_ticket(self, ticketid):
-        if ticketid is not None:
-            for ticket in self.tickets:
-                print ticket
-
-if __name__ == '__main__':
-    Command().cmdloop()
+print argsv.list_tickets
+print main_parser.get_default('list_tickets')

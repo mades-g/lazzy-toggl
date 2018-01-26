@@ -2,8 +2,6 @@ from __future__ import print_function
 import httplib2
 import os
 
-import json
-
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
@@ -58,7 +56,7 @@ class GmailCommander:
             print('Storing credentials to ' + credential_path)
         return credentials
 
-    def getmytickets(self, user_id='me', wk=None, wkidx=None):
+    def getmytickets(self, wk, wkidx, user_id='me'):
         querystring =  '"%s assigned an issue to Eudes"' %(datetime_utils.week_range(wk=wk, idx=wkidx))
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
