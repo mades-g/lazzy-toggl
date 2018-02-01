@@ -16,10 +16,10 @@ def week_range_delta(init_range, wk=None, idx = None):
     wk_rg = {}
     # wk -> current
     if wk == 'last':
-        s_date_delta = init_range - timedelta(days= 7 * idx)
-        print s_date_delta
-    e_date_delta =  s_date_delta + timedelta(days=6)
-    wk_rg['st_date'] = date(s_date_delta.year, s_date_delta.month, s_date_delta.day)
+        init_range = init_range - timedelta(days= 7 * idx)
+        print init_range
+    e_date_delta =  init_range + timedelta(days=6)
+    wk_rg['st_date'] = date(init_range.year, init_range.month, init_range.day)
     wk_rg['ed_date'] = date(e_date_delta.year, e_date_delta.month, e_date_delta.day)
     return wk_rg
 
