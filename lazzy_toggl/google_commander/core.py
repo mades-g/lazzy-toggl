@@ -76,7 +76,10 @@ class GmailCommander:
             ticket = {}
             message = service.users().messages().get(userId=user_id, id=msg['id'], format='metadata', metadataHeaders=['Subject']).execute()
             # [JIRA] (LB-73) Deposit button next to account balance on mobile -
-            filtered_string = re.search('^\[JIRA\]\s+?\W(?P<ticketid>\w+-\d+)\W\s+?(?P<title>.*)', message['payload']['headers'][0]['value'])
+            filtered_string = re.search(
+                                        '^\[JIRA\]\s+?\W(?P<ticketid>\w+-\d+)\W\s+?(?P<title>.*)',
+                                        message['payload']['headers'][0]['value']
+                                        )
             ticket['msgid'] = msg['id']
             # LB-73
             ticket['ticketid'] = '[%s]'%(filtered_string.group('ticketid'))

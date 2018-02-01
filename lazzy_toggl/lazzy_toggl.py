@@ -2,25 +2,58 @@
 from google_commander import core as gcore
 from toggl_commander import core as tgcore
 import argparse
-import json
 import cmd
 import sys
+from utils import  data_types
+import re
 
 # This is only went we are on interactive mode
 
 g_cmd = gcore.GmailCommander()
 tg_cmd = tgcore.TogglCommander()
+
 class Command(cmd.Cmd):
+
     tickets_list = {}
-    prompt = "Lazy Toggl:"
-    def do_list(self, line):
+    prompt = "Lazy Toggl: "
+
+    def do_list_tickets(self, line):
         if line == '':
-            tickets_list = g_cmd.getmytickets()
+            self.tickets_list = g_cmd.getmytickets()
         else:
-            print "yah"
-        print json.dumps(tickets_list, indent=4)
+            args = line.split()
+            _wk = args[0]
+            if len(args) == 2:
+                _idx = line.split()[1][-1] #N=(n)
+            else:
+                _idx = 1
+            self.tickets_list = g_cmd.getmytickets(wk=_wk, wkidx=_idx)
+        print data_types.show_data(self.tickets_list)
+
+    def complete_list_tickets(self, text, line, begidx, endidx):
+        ''' List last N tickets '''
+        return ['last N=']
+
+    def complete_create_toggl_entry(self, text, line, begidx, endidx):
+        search_list = list(
+            map(lambda ticket:
+                            re.search('\[(?P<ticketid>.*)\]',
+                            ticket.get('ticketid')).group('ticketid')
+            , self.tickets_list)
+        )
+        if not text:
+            completions = search_list[:]
+        else:
+            completions = [ ticket_ref
+                            for ticket_ref in search_list
+                            if ticket_ref.startswith(text)
+                            ]
+        return completions
+
+    def do_create_toggl_entry(self, line):
+        print line
     
-    def do_EOF(self):
+    def do_exit(self, line):
         return True
 
 
