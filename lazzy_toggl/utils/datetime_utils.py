@@ -1,22 +1,28 @@
 from time import localtime
-from datetime import date
+from datetime import date, datetime, timedelta
 
+def week_range(_wk=None, _idx=1):
 
-def week_range(wk, idx):
-    
     today = date.today()
     detailed_today = localtime()
     wkday = localtime()[6]
+    start_nday_ago = abs(today.day - wkday - 2)
+    s_date_delta = today - timedelta(days=start_nday_ago)
+    wk_rg = week_range_delta(s_date_delta,wk=_wk, idx=_idx)
 
-    st_date = date(today.year, today.month, today.day - wkday - 1)
-    ed_date = date(today.year, today.month, st_date.day + 6)
+    return '%s %s' %(starting_date(wk_rg.get('st_date','')), end_date(wk_rg.get('ed_date','')))
 
+def week_range_delta(init_range, wk=None, idx = None):
+    wk_rg = {}
+    # wk -> current
     if wk == 'last':
-        # Defaul is last week, idx = 1.
-        st_date = st_date.replace(day=st_date.day - 7 * idx)
-        ed_date = st_date.replace(day=ed_date.day - 7 * idx)
+        s_date_delta = init_range - timedelta(days= 7 * idx)
+        print s_date_delta
+    e_date_delta =  s_date_delta + timedelta(days=6)
+    wk_rg['st_date'] = date(s_date_delta.year, s_date_delta.month, s_date_delta.day)
+    wk_rg['ed_date'] = date(e_date_delta.year, e_date_delta.month, e_date_delta.day)
+    return wk_rg
 
-    return '%s %s' %(starting_date(st_date), end_date(ed_date))
 
 def fdate(d):
     return d.strftime('%Y/%m/%d')
