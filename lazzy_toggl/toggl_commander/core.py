@@ -36,7 +36,7 @@ class TogglCommander:
     # Time entries
 
     def create_time_entry(self, pid=None):
-        pass
+        print self.auth
 
     def stop_time_entry(self, entry_id):
         pass

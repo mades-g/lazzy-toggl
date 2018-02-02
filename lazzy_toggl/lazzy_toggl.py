@@ -7,15 +7,37 @@ import sys
 from utils import  data_types
 import re
 
+
+
 # This is only went we are on interactive mode
 
 g_cmd = gcore.GmailCommander()
 tg_cmd = tgcore.TogglCommander()
 
 class Command(cmd.Cmd):
-
     tickets_list = {}
     prompt = "Lazy Toggl: "
+
+
+    def parseline(self, line):
+        """Parse the line into a command name and a string containing
+        the arguments.  Returns a tuple containing (command, args, line).
+        'command' and 'args' may be None if the line couldn't be parsed.
+        """
+        line = line.strip()
+        if not line:
+            return None, None, line
+        elif line[0] == '?':
+            line = 'help ' + line[1:]
+        elif line[0] == '!':
+            if hasattr(self, 'do_shell'):
+                line = 'shell ' + line[1:]
+            else:
+                return None, None, line
+        i, n = 0, len(line)
+        while i < n and line[i] in self.identchars: i = i+1
+        cmd, arg = line[:i], line[i:].strip()
+        return cmd, arg, line
 
     def do_list_tickets(self, line):
         if line == '':
@@ -32,7 +54,15 @@ class Command(cmd.Cmd):
 
     def complete_list_tickets(self, text, line, begidx, endidx):
         ''' List last N tickets '''
-        return ['last N=']
+        list_tickets_opts = ['last N=']
+        if not text:
+            completions = list_tickets_opts[:]
+        else:
+            completions  = [ opts
+                            for opts  in list_tickets_opts
+                            if opts.startswith(text)
+                            ]
+        return completions
 
     def complete_create_toggl_entry(self, text, line, begidx, endidx):
         search_list = list(
@@ -41,7 +71,7 @@ class Command(cmd.Cmd):
                             ticket.get('ticketid')).group('ticketid')
             , self.tickets_list)
         )
-        if not text:
+        if not text or text == '':
             completions = search_list[:]
         else:
             completions = [ ticket_ref
@@ -51,7 +81,8 @@ class Command(cmd.Cmd):
         return completions
 
     def do_create_toggl_entry(self, line):
-        print line
+        print self.tickets_list
+        tg_cmd.create_time_entry()
     
     def do_exit(self, line):
         return True
