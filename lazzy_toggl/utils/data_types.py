@@ -7,4 +7,4 @@ def show_data(data, type='json'):
     except RuntimeError:
         print "Invalid data type."
         sys.exit(0)
-    return data_to_be_shown
+    print data_to_be_shown

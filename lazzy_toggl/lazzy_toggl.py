@@ -4,7 +4,7 @@ from toggl_commander import core as tgcore
 import argparse
 import cmd
 import sys
-from utils import  data_types
+from utils.data_types import  show_data
 import re
 
 
@@ -17,8 +17,7 @@ tg_cmd = tgcore.TogglCommander()
 class Command(cmd.Cmd):
     tickets_list = {}
     prompt = "Lazy Toggl: "
-
-
+    # Save this on file so there's no need to request it again
     def parseline(self, line):
         """Parse the line into a command name and a string containing
         the arguments.  Returns a tuple containing (command, args, line).
@@ -50,7 +49,7 @@ class Command(cmd.Cmd):
             else:
                 _idx = 1
             self.tickets_list = g_cmd.getmytickets(wk=_wk, wkidx=_idx)
-        print data_types.show_data(self.tickets_list)
+        show_data(self.tickets_list)
 
     def complete_list_tickets(self, text, line, begidx, endidx):
         ''' List last N tickets '''
@@ -81,9 +80,11 @@ class Command(cmd.Cmd):
         return completions
 
     def do_create_toggl_entry(self, line):
-        print self.tickets_list
-        tg_cmd.create_time_entry()
-    
+        if line != '' or line != '--all':
+            tg_cmd.find_client_id(search_val=line)
+        else:
+            print 'Invalid toggl entry.'
+
     def do_exit(self, line):
         return True
 
