@@ -7,7 +7,7 @@ def week_range(_wk=None, _idx=None):
     today = date.today()
     detailed_today = localtime()
     wkday = localtime()[6]
-    start_nday_ago = abs(today.day - wkday - 2)
+    start_nday_ago = abs(today.day + wkday -1)
     s_date_delta = today - timedelta(days=start_nday_ago)
     wk_rg = week_range_delta(s_date_delta,wk=_wk, idx=_idx)
     print '%s %s' %(starting_date(wk_rg.get('st_date','')), end_date(wk_rg.get('ed_date','')))
