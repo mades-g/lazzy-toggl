@@ -7,9 +7,9 @@ class TogglCommander:
 
     project_entry = {
         "project": {
-            "name": "",
+            "name": "", # Description from time entry
             "wid": "",
-            "is_private": "",
+            "is_private": False,
             "cid": ""
             }
     }
@@ -48,12 +48,11 @@ class TogglCommander:
 
     # Time entries
 
-    def create_time_entry(self, entry, wid=2408938, pid=None):
+    def create_time_entry(self, entry, wid=2408938, pid=""):
         print '%s%s' %(self.api_url,self.time_entry_path)
         entry['wid'] = wid
         entry['pid'] = pid
-        self.time_entry
-        _entry = self.time_entry.copy()
+        _entry = self.time_entry['time_entry'].copy()
         _entry.update(entry)
         print _entry
     def stop_time_entry(self, entry_id):
@@ -85,15 +84,14 @@ class TogglCommander:
         pass
 
     def find_client_id(self, search_val=None):
-        # For projects
         if search_val is not None:
-            clients = str(self.my_toggl_info.get('clients')).encode('utf-8')
-            print type(clients)
-            search_id = '%s.*?\W.*?(\d+)' %(search_val)
-            search_result = re.search(search_id, clients, flags=2)
+            clients = str(self.my_toggl_info.get('clients')).encode('utf-8') # get clients
+            search_query = '%s.*?\W.*?(\d+)' %(search_val)
+            search_result = re.search(search_query, clients, flags=2)
             if search_result is not None:
-                client_id = search_result.groups(0)
+                client_id = search_result.group(0)
+                self.project_entry['project']['cid'] = client_id
             else:
-                print clients
+                print 'Unknown project.'
         else:
-            pass
+            print 'Empty Jira ticket ID.'

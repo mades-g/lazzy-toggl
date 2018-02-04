@@ -7,8 +7,6 @@ import sys
 from utils.data_types import  show_data
 import re
 
-
-
 # This is only went we are on interactive mode
 
 g_cmd = gcore.GmailCommander()
@@ -16,7 +14,9 @@ tg_cmd = tgcore.TogglCommander()
 
 class Command(cmd.Cmd):
     tickets_list = {}
+    current_t = {}
     prompt = "Lazy Toggl: "
+    error_log = []
     # Save this on file so there's no need to request it again
     def parseline(self, line):
         """Parse the line into a command name and a string containing
@@ -79,9 +79,45 @@ class Command(cmd.Cmd):
                             ]
         return completions
 
-    def do_create_toggl_entry(self, line):
+    def do_create_toggl_entry(self, line): #-b bulk 
+        entry = {}
         if line != '' or line != '--all':
-            tg_cmd.find_client_id(search_val=line)
+            argsv = line.split()
+            ticket_ref = re.search('(\A\w*)-|(\D.*)', line, flags=2) # bug for 21bet 188...
+            if ticket_ref is not None:
+                if ticket_ref.group(1) is None:
+                    line = ticket_ref.group(0)
+                else:
+                    line =  ticket_ref.group(1)
+                for ticket_ref in self.tickets_list:
+                    search_query = '(%s_\d+)' %(line)
+                    result = re.search(search_query, str(ticket_ref), flags=2)
+                    if result is not None:
+                        entry['description'] = ticket_ref[result.group(0)]['description']
+                        break
+                try:
+                    start_idx = argsv.index('-s')
+                    try:
+                        start = argsv[start_idx + 1] # validate starting date
+                    except:
+                        self.error_log.append('Empty starting time.')
+                except:
+                    print 'No starting time provided...falling for default.'
+
+                try:
+                    duration_idx = argsv.index('-d')
+                    try:
+                        durantion = argsv[duration_idx + 1] # validate duration
+                    except:
+                        self.error_log.append('Empty duration.')
+                except:
+                    print 'No duration time provided...falling for default.'
+
+                if len(self.error_log) == 0:
+                    tg_cmd.create_time_entry(entry)
+                else:
+                    print self.error_log[0]
+
         else:
             print 'Invalid toggl entry.'
 

@@ -80,10 +80,12 @@ class GmailCommander:
                                         '^\[JIRA\]\s+?\W(?P<ticketid>\w+-\d+)\W\s+?(?P<title>.*)',
                                         message['payload']['headers'][0]['value']
                                         )
+            ticket_ref = filtered_string.group('ticketid').replace('-','_')
+            ticket[ticket_ref] = {}
+            ticket[ticket_ref]['description'] = '[%s] - %s' %(filtered_string.group('ticketid'), filtered_string.group('title'))
             ticket['msgid'] = msg['id']
-            # LB-73
+
             ticket['ticketid'] = '[%s]'%(filtered_string.group('ticketid'))
             # Deposit button next to account balance on mobile
-            ticket['title'] = filtered_string.group('title')
             mytickets.append(ticket)
         return mytickets
