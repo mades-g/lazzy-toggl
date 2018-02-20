@@ -39,7 +39,7 @@ def total_hours_minutes(hours_minutes):
     if hours_index > -1:
         hours = hours_minutes[0:hours_index]
         try:
-            minutes = int(hours)
+            hours = int(hours)
         except:
             print 'Invalid time.'
             sys.exit()
@@ -58,7 +58,8 @@ def total_hours_minutes(hours_minutes):
             else:
                 print 'Invalid time.'
                 sys.exit()
-
+        if len(minutes) == 1:
+            minutes = minutes + '0'
     elif minutes_index > -1:
         minutes = hours_minutes[0:minutes_index]
     elif re.search('(^\d+)$',hours_minutes) is not None:

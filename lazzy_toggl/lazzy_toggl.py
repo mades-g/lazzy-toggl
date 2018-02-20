@@ -5,6 +5,7 @@ import argparse
 import cmd
 import sys
 from utils.data_types import  show_data
+from utils.datetime_utils import total_hours_minutes
 import re
 
 # This is only went we are on interactive mode
@@ -99,6 +100,7 @@ class Command(cmd.Cmd):
                     start_idx = argsv.index('-s')
                     try:
                         start = argsv[start_idx + 1] # validate starting date
+                        print start
                     except:
                         self.error_log.append('Empty starting time.')
                 except:
@@ -106,12 +108,10 @@ class Command(cmd.Cmd):
 
                 try:
                     duration_idx = argsv.index('-d')
-                    try:
-                        durantion = argsv[duration_idx + 1] # validate duration
-                    except:
-                        self.error_log.append('Empty duration.')
+                    durantion = argsv[duration_idx + 1] # validate duration
+                    entry['duration'] = total_hours_minutes(durantion)
                 except:
-                    print 'No duration time provided...falling for default.'
+                    print 'Invalid duration.'
 
                 if len(self.error_log) == 0:
                     tg_cmd.create_time_entry(entry)
