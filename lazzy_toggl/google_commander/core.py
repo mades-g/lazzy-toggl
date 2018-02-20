@@ -52,8 +52,8 @@ class GmailCommander:
             print('Storing credentials to ' + credential_path)
         return credentials
 
-    def getmytickets(self, wk, wkidx, user_id='me'):
-        querystring =  '"%s assigned an issue to Eudes"' %(datetime_utils.week_range(wk=wk, idx=wkidx))
+    def getmytickets(self, wk=None, wkidx=None, user_id='me'):
+        querystring =  '"%s assigned an issue to Eudes"' %(datetime_utils.week_range(_wk=wk, _idx=wkidx))
         credentials = self.get_credentials()
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
@@ -76,11 +76,16 @@ class GmailCommander:
             ticket = {}
             message = service.users().messages().get(userId=user_id, id=msg['id'], format='metadata', metadataHeaders=['Subject']).execute()
             # [JIRA] (LB-73) Deposit button next to account balance on mobile -
-            filtered_string = re.search('^\[JIRA\]\s+?\W(?P<ticketid>\w+-\d+)\W\s+?(?P<title>.*)', message['payload']['headers'][0]['value'])
+            filtered_string = re.search(
+                                        '^\[JIRA\]\s+?\W(?P<ticketid>\w+-\d+)\W\s+?(?P<title>.*)',
+                                        message['payload']['headers'][0]['value']
+                                        )
+            ticket_ref = filtered_string.group('ticketid').replace('-','_')
+            ticket[ticket_ref] = {}
+            ticket[ticket_ref]['description'] = '[%s] - %s' %(filtered_string.group('ticketid'), filtered_string.group('title'))
             ticket['msgid'] = msg['id']
-            # LB-73
+
             ticket['ticketid'] = '[%s]'%(filtered_string.group('ticketid'))
             # Deposit button next to account balance on mobile
-            ticket['title'] = filtered_string.group('title')
             mytickets.append(ticket)
         return mytickets
